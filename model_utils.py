@@ -49,17 +49,26 @@ def predict_image(model, processed_image, class_names):
     Returns:
         tuple: (predicted_class_name, confidence_scores)
     """
-    # Make prediction
-    prediction = model.predict(processed_image)
-    confidence_scores = prediction[0]
-    
-    # Get the index of the class with highest probability
-    predicted_class_index = np.argmax(confidence_scores)
-    
-    # Get the name of the predicted class
-    if predicted_class_index < len(class_names):
-        predicted_class_name = class_names[predicted_class_index]
-    else:
-        predicted_class_name = f"Unknown Class {predicted_class_index}"
-    
-    return predicted_class_name, confidence_scores
+    try:
+        # Ensure the image is in the correct shape
+        if len(processed_image.shape) != 4:
+            processed_image = np.expand_dims(processed_image, axis=0)
+            
+        # Make prediction
+        prediction = model.predict(processed_image, verbose=0)
+        confidence_scores = prediction[0]
+        
+        # Get the index of the class with highest probability
+        predicted_class_index = np.argmax(confidence_scores)
+        
+        # Get the name of the predicted class
+        if predicted_class_index < len(class_names):
+            predicted_class_name = class_names[predicted_class_index]
+        else:
+            predicted_class_name = f"Unknown Class {predicted_class_index}"
+        
+        return predicted_class_name, confidence_scores
+        
+    except Exception as e:
+        print(f"Error during prediction: {e}")
+        return "Error in prediction", np.zeros(len(class_names))
