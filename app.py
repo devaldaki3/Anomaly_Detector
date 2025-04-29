@@ -84,7 +84,7 @@ st.markdown("""
 # Sidebar
 with st.sidebar:
     st.markdown("<h1 style='text-align: center;'>MicroCheck</h1>", unsafe_allow_html=True)
-    st.image("assets/overview_dataset.jpg", width=None)
+    st.image("assets/overview_dataset.jpg", width=300)
     st.markdown("### Anomaly Detection Tool")
     st.markdown("---")
     st.markdown("### How to use:")
@@ -127,10 +127,11 @@ elif input_method == "Camera Input":
 
 # Process image and show results
 if image_bytes is not None:
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([1, 1])  # Equal width columns
     
     with col1:
-        st.image(image, caption="Input Image", use_column_width=True)
+        # Display input image with fixed width
+        st.image(image, caption="Input Image", width=400)
     
     with col2:
         if os.path.exists(model_path) and os.path.exists(labels_path):
@@ -152,20 +153,27 @@ if image_bytes is not None:
                 st.markdown("<div class='output-header'>Detection Results:</div>", unsafe_allow_html=True)
                 
                 # Display results for both classes
-                normal_score = confidence_scores[0]
-                anomaly_score = confidence_scores[1]
+                normal_score = float(confidence_scores[0])  # Ensure float conversion
+                anomaly_score = float(confidence_scores[1])  # Ensure float conversion
                 
                 # Normal probability
+                st.markdown(f"<div style='margin-bottom: 20px;'>", unsafe_allow_html=True)
                 st.markdown(f"<span class='normal-dot'>●</span> Normal", unsafe_allow_html=True)
                 st.markdown(f"<div class='percentage'>{normal_score:.2f}%</div>", unsafe_allow_html=True)
+                st.markdown("</div>", unsafe_allow_html=True)
                 
                 # Anomaly probability
+                st.markdown(f"<div style='margin-bottom: 20px;'>", unsafe_allow_html=True)
                 st.markdown(f"<span class='anomaly-dot'>●</span> Anomaly", unsafe_allow_html=True)
                 st.markdown(f"<div class='percentage'>{anomaly_score:.2f}%</div>", unsafe_allow_html=True)
+                st.markdown("</div>", unsafe_allow_html=True)
                 
                 # Probability bar
                 st.markdown("<div class='result-label'>Anomaly Probability</div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='probability-bar' style='width: {anomaly_score}%;'></div>", unsafe_allow_html=True)
+                st.markdown(
+                    f"""<div class='probability-bar' style='width: {min(100, max(0, anomaly_score))}%;'></div>""",
+                    unsafe_allow_html=True
+                )
                 
                 # Alert box if anomaly detected
                 if anomaly_score > 50:
