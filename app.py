@@ -117,30 +117,45 @@ if image_bytes is not None:
         st.markdown("<p class='subheader'>Detection Results</p>", unsafe_allow_html=True)
         
         if os.path.exists(model_path) and os.path.exists(labels_path):
-            # Load model
-            model = load_model(model_path)
-            
-            # Preprocess image for model
-            processed_image = preprocess_image(image_bytes)
-            
-            # Predict
-            prediction, confidence_scores = predict_image(model, processed_image, class_names)
-            
-            # Display prediction result
-            st.markdown("<div class='prediction-box'>", unsafe_allow_html=True)
-            st.markdown(f"### Prediction: {prediction}")
-            st.markdown("### Confidence Scores:")
-            
-            # Display confidence bars for all classes
-            for i, (class_name, score) in enumerate(zip(class_names, confidence_scores)):
-                score_percentage = float(score * 100)
-                color = "#4CAF50" if score == max(confidence_scores) else "#9E9E9E"
-                st.markdown(f"**{class_name}**: {score_percentage:.2f}%")
-                st.markdown(
-                    f"""<div class="confidence-meter" style="width: {score_percentage}%; background-color: {color};"></div>""",
-                    unsafe_allow_html=True
-                )
-            st.markdown("</div>", unsafe_allow_html=True)
+            try:
+                # Load model
+                model = load_model(model_path)
+                if model is None:
+                    st.error("Failed to load model. Please check the model file.")
+                    st.stop()
+                
+                # Preprocess image for model
+                processed_image = preprocess_image(image_bytes)
+                if processed_image is None:
+                    st.error("Failed to process image. Please try a different image.")
+                    st.stop()
+                
+                # Predict
+                prediction, confidence_scores = predict_image(model, processed_image, class_names)
+                
+                # Display prediction result
+                st.markdown("<div class='prediction-box'>", unsafe_allow_html=True)
+                
+                if prediction == "Error in prediction":
+                    st.error("Error occurred during prediction. Please try again.")
+                else:
+                    st.markdown(f"### Prediction: {prediction}")
+                    st.markdown("### Confidence Scores:")
+                    
+                    # Display confidence bars for all classes
+                    for i, (class_name, score) in enumerate(zip(class_names, confidence_scores)):
+                        score_percentage = float(score)  # Already in percentage
+                        color = "#4CAF50" if score == max(confidence_scores) else "#9E9E9E"
+                        st.markdown(f"**{class_name}**: {score_percentage:.2f}%")
+                        st.markdown(
+                            f"""<div class="confidence-meter" style="width: {score_percentage}%; background-color: {color};"></div>""",
+                            unsafe_allow_html=True
+                        )
+                st.markdown("</div>", unsafe_allow_html=True)
+                
+            except Exception as e:
+                st.error(f"An error occurred: {str(e)}")
+                st.error("Please try again with a different image or check if the model is properly loaded.")
         else:
             st.error("Model not found. Please upload the model files first.")
 
