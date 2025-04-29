@@ -51,7 +51,7 @@ st.markdown("""
 # Sidebar
 with st.sidebar:
     st.markdown("<h1 style='text-align: center;'>MicroCheck</h1>", unsafe_allow_html=True)
-    st.image("assets/overview_dataset.jpg", use_column_width=True)
+    st.image("assets/overview_dataset.jpg", width=None)
     st.markdown("### Anomaly Detection Tool")
     st.markdown("---")
     st.markdown("### How to use:")
@@ -91,7 +91,7 @@ if uploaded_file is not None:
     
     with col1:
         st.markdown("<p class='subheader'>Original Image</p>", unsafe_allow_html=True)
-        st.image(image, use_column_width=True)
+        st.image(image, width=None)
     
     # Model prediction section
     with col2:
