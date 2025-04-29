@@ -1,6 +1,26 @@
 import tensorflow as tf
 import numpy as np
 import os
+import json
+
+def custom_objects():
+    """
+    Create custom objects dictionary to handle model loading across different TF versions
+    """
+    try:
+        # Custom DepthwiseConv2D layer that ignores 'groups' parameter
+        class CompatibleDepthwiseConv2D(tf.keras.layers.DepthwiseConv2D):
+            def __init__(self, **kwargs):
+                # Remove 'groups' from kwargs if present
+                kwargs.pop('groups', None)
+                super().__init__(**kwargs)
+        
+        return {
+            'DepthwiseConv2D': CompatibleDepthwiseConv2D
+        }
+    except Exception as e:
+        print(f"Error creating custom objects: {str(e)}")
+        return {}
 
 def load_model(model_path):
     """
@@ -14,10 +34,13 @@ def load_model(model_path):
     """
     try:
         print(f"Loading model from: {model_path}")
-        # Load the model with proper configuration for Teachable Machine
+        print(f"TensorFlow version: {tf.__version__}")
+        
+        # Load the model with custom objects
         model = tf.keras.models.load_model(
             model_path,
-            compile=False
+            compile=False,
+            custom_objects=custom_objects()
         )
         
         # Print model summary for debugging
@@ -86,6 +109,6 @@ def predict_image(model, processed_image, class_names):
         
     except Exception as e:
         print(f"Error during prediction: {str(e)}")
-        print(f"Stack trace:", exc_info=True)
+        print("Stack trace:", exc_info=True)
         # Return error state
         return "Error in prediction", np.zeros(len(class_names))
