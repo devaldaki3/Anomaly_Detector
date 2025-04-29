@@ -45,6 +45,12 @@ st.markdown("""
         font-size: 0.8rem;
         margin-top: 3rem;
     }
+    .input-selection {
+        margin: 2rem 0;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -55,9 +61,10 @@ with st.sidebar:
     st.markdown("### Anomaly Detection Tool")
     st.markdown("---")
     st.markdown("### How to use:")
-    st.markdown("1. Upload an image using the file uploader")
-    st.markdown("2. View the model's prediction")
-    st.markdown("3. See confidence scores for each class")
+    st.markdown("1. Choose input method (Upload or Camera)")
+    st.markdown("2. Capture or select an image")
+    st.markdown("3. View the model's prediction")
+    st.markdown("4. See confidence scores for each class")
     st.markdown("---")
     st.markdown("### Model Info:")
     
@@ -75,18 +82,30 @@ with st.sidebar:
 
 # Main content
 st.markdown("<h1 class='main-header'>MicroCheck Anomaly Detection System</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center;'>Upload an image to detect anomalies using AI</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center;'>Detect anomalies using AI - Upload an image or use your camera</p>", unsafe_allow_html=True)
 
-# File uploader
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+# Input method selection
+st.markdown("<div class='input-selection'>", unsafe_allow_html=True)
+input_method = st.radio("Choose input method:", ["File Upload", "Camera Input"])
 
-# Process uploaded image
-if uploaded_file is not None:
-    # Convert the file to an image
-    image_bytes = uploaded_file.getvalue()
-    image = Image.open(io.BytesIO(image_bytes))
-    
-    # Display original image
+image_bytes = None
+image = None
+
+if input_method == "File Upload":
+    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+    if uploaded_file is not None:
+        image_bytes = uploaded_file.getvalue()
+        image = Image.open(io.BytesIO(image_bytes))
+elif input_method == "Camera Input":
+    camera_file = st.camera_input("Take a picture")
+    if camera_file is not None:
+        image_bytes = camera_file.getvalue()
+        image = Image.open(io.BytesIO(image_bytes))
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Process image and show results
+if image_bytes is not None:
+    # Display original image and results in columns
     col1, col2 = st.columns(2)
     
     with col1:
@@ -128,10 +147,13 @@ if uploaded_file is not None:
     # Additional analysis
     st.markdown("### Analysis Details")
     with st.expander("See technical details"):
-        st.write(f"Filename: {uploaded_file.name}")
+        if input_method == "File Upload":
+            st.write(f"Filename: {uploaded_file.name}")
+        else:
+            st.write("Source: Camera Input")
         st.write(f"Image size: {image.size}")
         st.write(f"Image format: {image.format}")
-        st.write("Note: The model is trained to detect specific anomalies based on the training data provided in Teachable Machine.")
+        st.write("Note: The model is trained to detect specific anomalies based on the training data provided.")
 
 # Footer
 st.markdown("<div class='footer'>MicroCheck | Powered by TensorFlow and Streamlit | Created for educational purposes</div>", unsafe_allow_html=True)
