@@ -1,10 +1,16 @@
-# Anomaly Detection Web App
+# MicroCheck: Anomaly Detection Web App 🚀
 
-A Streamlit-based web application that uses a TensorFlow model trained with Google's Teachable Machine to detect anomalies in images.
+![Prototype UI](assets/pro_ui.png)
 
-## Project Overview
+Welcome to **MicroCheck** – a modern, user-friendly web application for real-time anomaly detection in images! Built with Streamlit and TensorFlow, MicroCheck empowers you to quickly identify defects or anomalies in your products using a powerful machine learning model.
 
-This project provides a user-friendly interface for anomaly detection using a machine learning model. Users can upload images, and the application will analyze them to determine whether they contain anomalies based on the trained model.
+---
+
+## 🌟 Project Overview
+
+MicroCheck provides an intuitive interface for anomaly detection using a deep learning model trained with Google's Teachable Machine. Effortlessly upload or capture images, and instantly receive a clear, visual assessment of whether your product appears normal or anomalous.
+
+---
 
 ## Table of Contents
 

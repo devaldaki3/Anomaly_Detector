@@ -184,6 +184,8 @@ if image_bytes is not None:
                             </div>
                         </div>
                     """, unsafe_allow_html=True)
+                elif normal_score > anomaly_score:
+                    st.success("Product appears normal")
                 
                 st.markdown("</div>", unsafe_allow_html=True)
                 
